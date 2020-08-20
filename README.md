@@ -48,7 +48,9 @@ B. You should get the below result if succesful
 
 ## What is terraform
 
-**Two sides of IAC**
+- A configuration management tool
+
+**Two sides of IAC (Infastructure as code**
 
 - Configuration management (Ansible)
 - Orchestration (Terraform, Kubernetes)
