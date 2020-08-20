@@ -77,13 +77,15 @@ resource "aws_instance" "max_app_terraform" {
 
 ```terraform plan```
 
-- Once there are no erros run the file
+- Once there are no errors run the file
 
 ```terraform apply```
 
 - You should see an instance created
 
 ### 7. Creating subnets and security groups
+
+- Insert this into your main.tf file
 
 ```
 # Create a subnet
@@ -126,6 +128,8 @@ resource "aws_security_group" "max_sg" {
 ```
 
 ### 9. Attaching the Instance to the security group
+
+- Insert this into your main.tf file
 
 ```
 # Attach the instance to the SG and Subnet
