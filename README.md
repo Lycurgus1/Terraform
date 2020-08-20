@@ -42,7 +42,7 @@ A. Run the below command to test terraform is working
 
 B. You should get the below result if succesful
 
-installation_succesful.PNG
+![install_done](images/installation_succesful.PNG)
 
 ## What is terraform
 
