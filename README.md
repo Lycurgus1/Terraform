@@ -1,11 +1,12 @@
 # Terraform
 
-## Installation steps
-
+## Instaling Terraform
 
 ### These instructions apply for Windows systems
 
 ### 1. Download 32-bit Windows for Terraform
+
+```https://www.terraform.io/downloads.html```
 
 ### 2. Copy it into a program folder
 
