@@ -1,6 +1,6 @@
 # Terraform
 
-## Instaling Terraform
+## Installing Terraform
 
 ### These instructions apply for Windows systems
 
