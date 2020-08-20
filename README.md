@@ -1,5 +1,7 @@
 # Terraform
 
+![AWS](images/aws_logo.png) ![Terraform](images/terraform_logo.png)
+
 ## Installing Terraform
 
 ### These instructions apply for Windows systems
