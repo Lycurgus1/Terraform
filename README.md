@@ -42,3 +42,20 @@ A. Run the below command to test terraform is working
 B. You should get the below result if succesful
 
 installation_succesful.PNG
+
+## What is terraform
+
+**Two sides of IAC**
+
+- Configuration management (Ansible)
+- Orchestration (Terraform, Kubernetes)
+	- If used in containerisation docker used
+	- Crio, rocket are also used
+
+## Terraform commands
+
+- terraform init
+- terraform plan
+	- checks steps in code and lists successes/errors
+- terraform apply
+	- implements code
