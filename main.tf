@@ -143,10 +143,24 @@ resource "aws_instance" "max_app_terraform" {
   vpc_security_group_ids = ["${aws_security_group.max_sg.id}"]
    
   # the Public SSH key
-  #key_name = "${aws_key_pair.london-region-key-pair.id}"    
-  
+  key_name = "DevOpsStudents"    
+
   # Naming instance
   tags = {
       Name = "eng67_max_terraform_ec2"
   }
+}
+
+# Auto statring app
+provisioner "file" {
+        source = "nginx.sh"
+        destination = "/tmp/nginx.sh"
+    }
+    provisioner "remote-exec" {
+        inline = [
+             "chmod +x /tmp/nginx.sh",
+             "sudo /tmp/nginx.sh"
+        ]
+    }
+
 }
