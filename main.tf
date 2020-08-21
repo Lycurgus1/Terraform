@@ -6,36 +6,90 @@ provider "aws" {
   region  = var.region
 }
 
-# Create an instance
-resource "aws_instance" "max_app_terraform" {
-  # Defining ami image
-  ami           = var.app_ami_id
-  # Defining instance type to be created
-  instance_type = var.instance_type
-  # Deciding on public IP
-  associate_public_ip_address = true
-  # Naming instance
+# Create a VPC
+resource "aws_vpc" "max_terraform_vpc" {
+  cidr_block = "122.28.0.0/16"
   tags = {
-      Name = "eng67_max_terraform_ec2"
+    Name = "max_terraform_vpc"
   }
 }
 
 # Create a subnet
-resource "aws_subnet" "max_terraform_subnet" {
+resource "aws_subnet" "max_terraform_subnet_public" {
   # Attach this subnet to devsops student vpc
-  vpc_id     = "vpc-07e47e9d90d2076da"
-  cidr_block = "172.31.178.0/24"
+  vpc_id                  = aws_vpc.max_terraform_vpc.id
+  cidr_block              = "122.28.1.0/24"
+  # This makes the subnet public
+  map_public_ip_on_launch = "true"
+  tags = {
+    Name = "max_terraform_subnet"
+  }
+}
+
+# Create a internet gateway
+resource "aws_internet_gateway" "max_terraform_igw" {
+  vpc_id = aws_vpc.max_terraform_vpc.id
 
   tags = {
-    Name = "maxs_terraform_subnet"
+    Name = "max_terraform_igw"
   }
 }
 
 
-# Create a security group
+# Create a route table
+resource "aws_route_table" "max_terraform_routetable" {
+  # Attach this to devsops student vpc
+  vpc_id     = aws_vpc.max_terraform_vpc.id
+  # Assign the internet gateway to this route table
+  route {
+      cidr_block = "0.0.0.0/0"      
+      gateway_id = aws_internet_gateway.max_terraform_igw.id
+  }
+    
+  tags = {
+      Name = "max_terraform_routetable"
+  } 
+}
 
+
+# Associating the subnet and route table
+resource "aws_route_table_association" "max_subnet_assoiciation"{
+    subnet_id = aws_subnet.max_terraform_subnet_public.id
+    route_table_id = aws_route_table.max_terraform_routetable.id
+}
+
+# Create a NACL
+resource "aws_network_acl" "max_terraform_nacl" {
+  vpc_id = aws_vpc.max_terraform_vpc.id
+
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = aws_vpc.max_terraform_vpc.cidr_block
+    from_port  = 0
+    to_port    = 0
+  }
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags = {
+    Name = "max_terraform_nacl"
+  }
+
+}
+
+
+# Create a security group
 resource "aws_security_group" "max_sg" {
-  vpc_id = "vpc-07e47e9d90d2076da"
+  vpc_id = aws_vpc.max_terraform_vpc.id
 
   # Create ingress block to allow traffic in
   # Allow port 80 and 0.0.0.0/0
@@ -46,7 +100,15 @@ resource "aws_security_group" "max_sg" {
     to_port   = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
+  # Allowing SSH from my IP
+  ingress {
+      from_port = 22
+      to_port = 22
+      protocol = "tcp"
+      cidr_blocks = ["91.110.41.40/32"]
+    }
+
   # Create egress block to allow code out
   # All traffic out
 
@@ -56,10 +118,35 @@ resource "aws_security_group" "max_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "max_terraform_sg"
+  }
+
 }
 
-# Attach the instance to the SG and Subnet
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = aws_security_group.max_sg.id
- network_interface_id = aws_instance.max_app_terraform.primary_network_interface_id
+# Create an instance
+resource "aws_instance" "max_app_terraform" {
+  # Defining ami image
+  ami           = var.app_ami_id
+
+  # Defining instance type to be created
+  instance_type = var.instance_type
+
+  # Deciding on public IP
+  associate_public_ip_address = true
+
+  # VPC
+  subnet_id = aws_subnet.max_terraform_subnet_public.id 
+   
+  # Security Group
+  vpc_security_group_ids = ["${aws_security_group.max_sg.id}"]
+   
+  # the Public SSH key
+  #key_name = "${aws_key_pair.london-region-key-pair.id}"    
+  
+  # Naming instance
+  tags = {
+      Name = "eng67_max_terraform_ec2"
+  }
 }
