@@ -152,15 +152,15 @@ resource "aws_instance" "max_app_terraform" {
 }
 
 # Auto statring app
-provisioner "file" {
-        source = "nginx.sh"
-        destination = "/tmp/nginx.sh"
-    }
-    provisioner "remote-exec" {
-        inline = [
-             "chmod +x /tmp/nginx.sh",
-             "sudo /tmp/nginx.sh"
-        ]
-    }
-
-}
+# provisioner "file" {
+#        source = "nginx.sh"
+#        destination = "/tmp/nginx.sh"
+#    }
+#    provisioner "remote-exec" {
+#        inline = [
+#             "chmod +x /tmp/nginx.sh",
+#             "sudo /tmp/nginx.sh"
+#        ]
+#    }
+#
+#}
